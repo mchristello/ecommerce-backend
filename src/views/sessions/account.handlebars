@@ -1,0 +1,47 @@
+<section class="account">
+    <h2 class="title">My Account</h2>
+    {{#if user}}
+        {{#if isAdmin}}
+            <section class="container admin_card">
+                <div class="card m-5" style="max-width: 860px;">
+                    <div class="row g-0">
+                        <div class="col-md-6">
+                            <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png" class="img-fluid rounded-start m-5" class="img-fluid rounded-start">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card-body">
+                                <h3 class="card-title m-5">Welcome Admin, {{user.first_name}} {{user.last_name}} !</h3>
+                                <h4 class="card-text mb-5">Here's your info.</h4>
+                                <p class="card-text mb-5">E-mail: <i>{{user.email}}</i></p>
+                                <p class="card-text mb-5"><small class="text-muted">Your rol: {{user.rol}}.</small></p>
+                                <a href="/products/addNew">Add New Product</a>
+                            </div>
+                        </div>
+                        <button class="btn btn-light" id="buy_product__btn" value={{user._id}}><a href="/carts/63c84b48eb6eb52c6f70e1eb">Go to Cart</a></button>
+                    </div>
+                </div>
+            </section>
+
+        {{else}}
+            <section class="container user_card">
+                <div class="card m-5" style="width: 860px;">
+                    <div class="row g-0">
+                        <div class="col-md-6 mb-5">
+                            <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png" class="img-fluid rounded-start m-5">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card-body">
+                                <h3 class="card-title m-5">Hi, {{user.first_name}} {{user.last_name}} !</h3>
+                                <h4 class="card-text mb-5">Here's your info.</h4>
+                                <p class="card-text mb-5">E-mail: <i>{{user.email}}</i></p>
+                                <p class="card-text mb-5"><small class="text-muted">Your rol: {{user.rol}}.</small></p>
+                            </div>
+                        </div>
+                        <button class="btn btn-light" id="buy_product__btn" value={{user._id}}><a href="/carts/63c84b48eb6eb52c6f70e1eb">Go to Cart</a></button>
+                    </div>
+                </div>
+            </section>
+        {{/if}}
+    {{/if}}
+
+</section>

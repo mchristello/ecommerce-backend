@@ -1,0 +1,40 @@
+<main>
+    {{#if user}}
+        <h1 class="title">{{user.first_name}}, this is your cart so far.</h1>
+
+        <section class="container">
+            <table class="table table-light table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Image</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Go to Detail</th>
+                        <th scope="col">Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each result}}
+                        {{#each products}}
+                            <tr>
+                                <td><img width="60" src="{{this.product.thumbnail}}"></td>
+                                <th scope="row">{{this.product.description}}</th>
+                                <td>${{this.product.price}}</td>
+                                <td>{{this.quantity}}</td>
+                                <td scope="col"><a href="/products/{{this.product._id}}">Go to Detail</a></td>
+                                <td><button class="btn btn-danger" id="delete_btn" value={{this.product._id}} type="submit">DELETE</button></td>
+                            </tr>
+                        {{/each}}
+                    {{/each}}
+                </tbody>
+            </table>
+        </section>
+    {{else}}
+        <h1 class="title">Please, login to see your cart.</h1>
+    {{/if}}
+</main>
+
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{{!-- <script src="/socket.io/socket.io.js"></script> --}}
+<script src="./js/cart.js"></script>

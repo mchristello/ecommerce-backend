@@ -1,0 +1,42 @@
+<main>
+
+    <h1 class="title">Product Detail.</h1>
+
+    <section id="card__container" class="cards">
+        {{#each productFound}}
+                <div class="card mb-3" style="max-width: 860px;">
+                    <div class="row g-0">
+                        <div class="col-md-6">
+                            <img src="{{this.thumbnail}}" class="img-fluid rounded-start" alt="{{this.description}}">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card-body">
+                                <h3 class="card-title">{{this.title}}</h3>
+                                <h4 class="card-text">{{this.description}}</h4>
+                                <p class="card-text">Price: $<i>{{this.price}}</i></p>
+                                <p class="card-text"><small class="text-muted">Stock Available: {{this.stock}} unidades.</small></p>
+                            </div>
+                        </div>
+                        <button class="btn btn-success" id="buy_product__btn" value={{this._id}}>Add to Cart</button>
+                    </div>
+                </div>
+                {{!-- <div class="card__item-detail">
+                    <img class="card__img" src={{this.thumbnail}}>
+                    <hr>
+                    <div class="card__body-detail">
+                        <p>{{this.title}}</p>
+                        <p><b>{{this.description}}</b></p>
+                        <p>Price: $<i>{{this.price}}</i></p>
+                        <p>Stock Available: {{this.stock}}</p>
+                        <button class="item-cart_btn" id="buy_product__btn" value={{this._id}}>Add to Cart</button>
+                    </div> --}}
+                </div>
+        {{/each}}        
+    </section>
+
+</main>
+
+{{!-- Scripts de JS --}}
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{{!-- <script src="/socket.io/socket.io.js"></script> --}}
+<script src="/js/index.js"></script>
