@@ -47,5 +47,29 @@ export class UserManager {
         }
     }
 
+    updateUser = async(userEmail, cartId) => {
+        try {
+            const findCart = await UserModel.findOne({ "carts.cart": cartId });
+
+            if(findCart) {
+                const updateCart = await UserModel.updateOne({ "carts.cart": cartId }, cartId );
+                const newUser = await UserModel.findOne({ email: userEmail })
+                console.log(`Revisando el update del user: `, JSON.stringify(newUser, null, 2, `\t`));
+
+                return updateCart;
+            }
+
+            user.carts.push({ cart: cartId });
+            
+            const result = await UserModel.updateOne({ email: userEmail }, user);
+            
+            return result;
+
+        } catch (error) {
+            if(error.message === NotFoundError){
+                throw new NotFoundError(`We couldn't find the user in our database`)
+            }
+        }
+    }
 
 }

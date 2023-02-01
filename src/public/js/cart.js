@@ -1,3 +1,5 @@
+console.log(`Testing to check`);
+
 let deleteProductBtn = document.querySelectorAll('#delete_btn');
 
 // DELETE para eliminar del carrito

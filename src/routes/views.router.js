@@ -147,7 +147,7 @@ router.get('/carts/:cid', async(req, res) => {
         const cid = req.params.cid
     
         const result = await cartManager.getCartById(cid);
-
+        console.log(JSON.stringify(result, null, 2, `\t`));
         const user = req.session.user;
     
         res.render('products/carts', {

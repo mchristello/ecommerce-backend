@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import passport from 'passport';
+import { userManager } from '../dao/manager/index.js';
 import { AuthMiddleware } from '../middlewares/index.js';
 
 
@@ -18,7 +19,7 @@ router.post(
     passport.authenticate('register', '/sessions/registerFailed'), 
     async (req, res) => {
 
-    return res.status(200).redirect('/sessions/account');
+    return res.status(200).redirect('/sessions/login');
 
 });
 
@@ -44,7 +45,7 @@ router.get(
 
 router.get(
     '/github-callback', 
-    passport.authenticate('github', {failureRedirect: '/login'}), 
+    passport.authenticate('github', {failureRedirect: '/sessions/login'}), 
     async(req, res) => {
 
     req.session.user = req.user;
@@ -99,13 +100,18 @@ router.get('loginFailed', async (req, res) =>{
 
 // Vista de el User Profile - No puede ingresar si no esta autenticado
 router.get('/account', AuthMiddleware.isAuthenticated, async(req, res) => {
-    const user = req.session.user
-
-    res.render('sessions/account', {
-        style: 'style.css',
-        user,
-        isAdmin: user.rol === 'admin',
-    });
+    try {
+        const user = req.session.user
+        console.log(JSON.stringify(user.carts[0], null, 2, `\t`));
+    
+        res.render('sessions/account', {
+            style: 'style.css',
+            user,
+            isAdmin: user.rol === 'admin',
+        });
+    } catch (error) {
+        return res.send({ Status: 'Error', Message: error.message });
+    }
 });
 
 // Ruta privada
@@ -123,6 +129,25 @@ router.get('/logout', (req, res) => {
             return res.redirect('/products');
         }
     })
+});
+
+router.get("/admin", async (req, res) => {
+    try {
+        const role = req.session.user.role;
+    
+        const allUsers = await userManager.getAllUsers();    
+        if (role === "admin") {
+            return res.render("control.panel", {
+            style: "styles.css",
+            allUsers,
+            });
+        }
+    
+        return res.redirect('/products');
+
+    } catch (error) {
+            return res.send({ Status: 'Error', Message: error.message });
+    }
 });
 
 export default router;

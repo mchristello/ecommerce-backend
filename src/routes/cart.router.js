@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { ERRORS } from '../constants/errors.js';
-import { cartManager } from '../dao/manager/index.js';
+import { cartManager, userManager } from '../dao/manager/index.js';
+import { CartModel } from '../dao/models/Cart.js';
 
 const router = Router();
 
@@ -18,8 +19,7 @@ router.get('/:cid', async (req, res) => {
     try {
             const { cid } = req.params;
         
-            const searchedCart = await cartManager.getCartById(cid);
-        
+            const searchedCart = await cartManager.getCartById(cid);      
         
             res.send({ Status: 'Success', payload: searchedCart });
         
@@ -36,8 +36,12 @@ router.get('/:cid', async (req, res) => {
 router.post('/', async (req, res) =>{
     try {
         const newCart = req.body;
-    
+
         const result = await cartManager.createNewCart(newCart);
+
+        // Actualizando carrito del usuario
+        const user = req.session.user;        
+        const updateUser = await userManager.updateUser(user.email, newCart);
     
         res.send({ Status: 'Success', Message: `A new cart has been created`, payload: result });
     } catch (error) {
@@ -52,19 +56,32 @@ router.post('/', async (req, res) =>{
 router.post('/:cid/products/:pid', async (req, res) => {
     try {
         const cartId = req.params.cid;
-        const productId = req.params.pid;
-
-        const searchProduct = await CartModel.findOne({"products.product": productId})
-
+        const productId = req.params.pid;        
+        const user = req.session.user;  
+        
+        const searchProduct = await CartModel.findOne({"products.product": productId});
+        
         if(searchProduct) {
             const result = await cartManager.updateQuantity(cartId, productId, 1);
+
+            // Actualizando carrito del usuario
+            const updatedUser = await userManager.updateUser(user.email, cartId);
+
             const showCart = await cartManager.getCartById(cartId);
-            
+            return res.send({ Status: 'Success', Message: `The product has been added to the cart.`, payload: showCart });
         }
-    
-        const result = await cartManager.addProduct(cartId, productId);
-    
+        
+        const result = await cartManager.addProduct(cartId, productId);        
+        
+        // Actualizando carrito del usuario
+        const updatedUser = await userManager.updateUser(user.email, cartId);
+
+        const checkUser = await userManager.getUser(user.email)
+        console.log(`Checking the user to see if it's been updated: `, JSON.stringify(checkUser, null, 2, `\t`));
+
+
         const showCart = await cartManager.getCartById(cartId);
+
     
         res.send({ Status: 'Success', Message: `The product has been added to the cart.`, payload: showCart });
         
@@ -87,6 +104,10 @@ router.delete('/:cid', async (req, res) => {
         const searchedCart = await cartManager.deleteAllProducts(cartId);
     
         const showCart = await cartManager.getCartById(cartId);
+
+        // Actualizando carrito del usuario
+        const user = req.session.user;        
+        const updateUser = await userManager.updateUser(user.email, cartId);
     
         res.send({ Status: 'Success', payload: showCart });
         
@@ -112,6 +133,10 @@ router.delete('/:cid/products/:pid', async (req, res) => {
         const searchedProduct = await cartManager.deleteFromCart(cartId, productId);
     
         const actualizedCart = await cartManager.getCartById(cartId);
+
+        // Actualizando carrito del usuario
+        const user = req.session.user;        
+        const updateUser = await userManager.updateUser(user.email, cartId);
     
         res.send({ Status: 'Success', Message: `The product has been deleted from the cart`, payload: actualizedCart });
     

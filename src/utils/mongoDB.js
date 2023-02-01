@@ -5,9 +5,9 @@ import { connect, set } from "mongoose";
 // DBaaS
 // username: mchristello
 // contraseña: matinho87
+export const dbName = 'ecommerce';
 
-
-const MONGO_URI = 'mongodb+srv://mchristello:matinho87@codercluster.e396lxc.mongodb.net/?retryWrites=true&w=majority';
+export const MONGO_URI = 'mongodb+srv://mchristello:matinho87@codercluster.e396lxc.mongodb.net/?retryWrites=true&w=majority';
 
 export const connectMongo = async () => {
     try {

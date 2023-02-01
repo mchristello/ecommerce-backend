@@ -1,13 +1,25 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
 import passport from 'passport';
 import local from 'passport-local';
 import GitHubStrategy from 'passport-github2';
 import GoogleStrategy from 'passport-google-oauth2';
+import jwt from 'passport-jwt';
 import { userManager } from '../dao/manager/index.js';
 import { createHash, isValidPassword } from '../utils/utils.js';
 import { UserModel } from '../dao/models/User.js';
 
 
-const LocalStrategy = local.Strategy
+const LocalStrategy = local.Strategy;
+
+const JWTStrategy = jwt.Strategy;
+const ExtractJWT = jwt.ExtractJwt;
+
+const cookieExtractor = req => {
+    const token = (req && req.cookies) ? req.cookies['ecommerceCookieToken'] : null;
+
+    return token;
+}
 
 const initializePassport = () => {
 
@@ -32,7 +44,7 @@ const initializePassport = () => {
                 
                 const result = new UserModel(newUser);
 
-                if (result.email === 'adminCoder@coder.com') {
+                if (result.email === 'adminCoder@coder.com' || 'm.christello@hotmail.com') {
                     result.rol = 'admin';
                     await result.save();
                     return done(null, result);
@@ -55,7 +67,7 @@ const initializePassport = () => {
             callbackURL: 'http://localhost:8080/sessions/github-callback'
         },
         async(accessToken, refreshToken, profile, done) => {
-            // console.log(`This is the PROFILE that returns GitHub: `, profile);
+            console.log(`This is the PROFILE that returns GitHub: `, profile);
             try {
                 const user = await userManager.getUser(profile._json.email);
                 if(user) {
@@ -64,10 +76,11 @@ const initializePassport = () => {
                 }
 
                 const newUser = {
-                    first_name: "",
+                    first_name: profile._json.name,
                     last_name: "",
                     email: profile._json.email,
-                    password: ""
+                    password: "",
+                    rol: (profile._json.email === 'adminCoder@coder.com' || 'm.christello@hotmail.com') ? 'admin' : 'user'
                 }
 
                 const result = await userManager.createUser(newUser);
@@ -88,7 +101,7 @@ const initializePassport = () => {
             passReqToCallback: true
         },
         async(request, accessToken, refreshToken, profile, done) => {
-            console.log(profile);
+            console.log(`This is the PROFILE that returns Google: `, profile); // Ver la info de perfir que devuelve Google
             try {
                 const user = await userManager.getUser(profile._json.email)
                 if(user) {
@@ -100,7 +113,8 @@ const initializePassport = () => {
                     first_name: profile._json.given_name,
                     last_name: profile._json.family_name,
                     email: profile._json.email,
-                    password: ""
+                    password: "",
+                    rol: (profile._json.email === 'adminCoder@coder.com' || 'm.christello@hotmail.com') ? 'admin' : 'user'
                 }
 
                 const result = await userManager.createUser(newUser);
@@ -112,7 +126,7 @@ const initializePassport = () => {
         }
     ))
 
-    // Logica de passport para iniciar sesión
+    // Logica de passport para iniciar sesión local
     passport.use('login', new LocalStrategy(
         { usernameField: 'email' },
         async(username, password, done) => {
@@ -132,7 +146,20 @@ const initializePassport = () => {
                 return done(`Hubo un error con el login:`, error);
             }
         }
-    ))
+    ));
+
+    // Lógica de passport con JWT
+    passport.use('jwt', new JWTStrategy({
+        jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
+        secretOrKey: process.env.PRIVATE_KEY
+    },
+    async (jwt_payload, done) => {
+        try {
+            return done(null, jwt_payload);
+        } catch (error) {
+            return done(error);
+        };
+    }));
 
     passport.serializeUser((user, done) => {
         done(null, user._id)

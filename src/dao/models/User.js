@@ -16,14 +16,21 @@ const userSchema = new mongoose.Schema({
         default: 'user'
     },
     carts: {
-        type: Array,
+        type: [
+            {
+                cart: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'carts',
+                },
+            }
+        ],
         default: []
     },
 });
 
-// userSchema.pre('findOne', function () {
-//     this.populate('carts.cart')
-// });
+userSchema.pre('findOne', function () {
+    this.populate('carts.cart')
+});
 
 userSchema.plugin(mongoosePaginate);
 
