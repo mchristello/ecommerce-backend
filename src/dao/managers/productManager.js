@@ -24,7 +24,7 @@ export class ProductManager {
             return products;
 
         } catch (error) {
-            if(error.message === NotFoundErrorz){
+            if(error.message === NotFoundError){
                 throw new NotFoundError(`We couldn't find any product in our database`)
             }
         }
@@ -33,12 +33,12 @@ export class ProductManager {
     findProducts = async(data) => {
         try {
             const filteredProducts = await ProductModel.find({_id: data}).lean().exec();
+            if(!filteredProducts){
+                throw new NotFoundError(`The Product does not exist in our database, please check again.`)
+            }
             return filteredProducts;
             
         } catch (error) {
-            if(error.message === NotFoundError){
-                throw new NotFoundError(`The Product does not exist in our database, please check again.`)
-            }
             console.log(`Cannot fin the product you are looking for: ${error.message}`);
         }
     }

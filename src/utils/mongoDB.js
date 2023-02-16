@@ -1,18 +1,16 @@
 import { connect, set } from "mongoose";
+import config from "../config/config.js";
 
 
 // MONGOOSE CONFIG.
 // DBaaS
 // username: mchristello
 // contraseña: matinho87
-export const dbName = 'ecommerce';
-
-export const MONGO_URI = 'mongodb+srv://mchristello:matinho87@codercluster.e396lxc.mongodb.net/?retryWrites=true&w=majority';
 
 export const connectMongo = async () => {
     try {
         set('strictQuery', false);
-        await connect(MONGO_URI, { dbName: 'ecommerce' });
+        await connect(config.MONGO_URL, { dbName: config.DB_NAME });
 
         console.log(`We are connected to MongoDB...!`);
         

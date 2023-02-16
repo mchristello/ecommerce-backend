@@ -1,5 +1,4 @@
-import mongoose from 'mongoose';
-import mongoosePaginate from 'mongoose-paginate-v2';
+import mongoose from "mongoose";
 
 const userCollection = 'users';
 
@@ -15,6 +14,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: 'user'
     },
+    age: {
+        type: Number,
+        default: ''
+    },
     carts: {
         type: [
             {
@@ -25,13 +28,11 @@ const userSchema = new mongoose.Schema({
             }
         ],
         default: []
-    },
+    }
 });
 
-userSchema.pre('findOne', function () {
+userSchema.pre('findOne', function() {
     this.populate('carts.cart')
-});
-
-userSchema.plugin(mongoosePaginate);
+})
 
 export const UserModel = mongoose.model(userCollection, userSchema);

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const cartCollection = 'carts';
 
@@ -12,13 +12,14 @@ const cartSchema = new mongoose.Schema({
                 },
                 quantity: Number
             }
-        ],
+        ], 
         default: []
     }
 });
 
-cartSchema.pre('find', function() {
+cartSchema.pre('find', function(){
     this.populate('products.product');
 });
 
 export const CartModel = mongoose.model(cartCollection, cartSchema);
+

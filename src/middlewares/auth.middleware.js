@@ -3,7 +3,10 @@ const isAuthenticated = (req, res, next) => {
         return next();
     }
 
-    return res.status(401).send("User unauthorized");
+    return res.render('errors/general', {
+        style: 'style.css', 
+        error: 'Please login first.'
+    });
 }
 
 export const AuthMiddleware = { isAuthenticated };

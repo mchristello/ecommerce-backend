@@ -1,60 +1,64 @@
-import * as dotenv from 'dotenv';
-dotenv.config()
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import passport from 'passport';
+import config from '../config/config.js';
 
-const PRIVATE_KEY = process.env.PRIVATE_KEY; // Key para JWT
 
 // * hashSync: toma el poassword y salt para "hashear"
 // * genSaltSync: Genera un salt (Un string aleatorio)
 
 export const createHash = (password) => {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-};
+}
 
 export const isValidPassword = (user, password) => {
     return bcrypt.compareSync(password, user.password)
 };
 
 
-// Se genera el Token con JWT
+// Config de JWT
+// export const PRIVATE_KEY = 'B@sti4n2021_qwer1234(From?MatCH';
+
 export const generateToken = (user) => {
-    const token = jwt.sign( {user}, PRIVATE_KEY, {expiresIn: '24h'} );
+    const token = jwt.sign({user}, config.PRIVATE_KEY, {expiresIn: '24h'})
 
     return token
-};
+}
 
-// Verificar la authenticacion con token
 export const authToken = (req, res, next) => {
-    const authHeader = req.headers.auth;
-    if(!authHeader) {
-        return res.status(401).send({ error: "No Authentication" });
-    };
+    const authToken = req.cookies.coderCookieToken;
 
-    const token = authHeader.split(' ')[1];
-    jwt.verify(token, PRIVATE_KEY, (error, credentials) => {
+    if(!authToken) {
+        return res.status(401).render('errors/general', {
+            style: 'style.css',
+            error: 'No authentication.'
+        });
+    }
+
+    jwt.verify(token, config.PRIVATE_KEY, (error, credentials) => {
         if(error) {
-            return res.status(403).send({ error: "Not Authorized" })
-        };
-
+            return res.status(403).render('errors/general', {
+                style: 'style.css',
+                error: 'No authorizations.'
+            });
+        }
         req.user = credentials.user;
         next();
-    });
-};
+    })
+}
 
-// Manejo de errores de Passport 
 export const passportCall = (strategyName) => {
     return async (req, res, next) => {
-        passport.authenticate(strategyName, function (err, user, info) {
-            if(err) return next(err);
-            if(!user) {
-                return res.status(401).send({
+        passport.authenticate(strategyName, function(err, user, info) {
+            if(err) {
+                return res.status(401).render('errors/general', {
+                    style: 'style.css',
                     error: info.message ? info.message : info.toString()
-                })
+                });
             }
 
-            req.res = user;
+            req.user = user;
             next();
         })(req, res, next);
     }
-};
+}

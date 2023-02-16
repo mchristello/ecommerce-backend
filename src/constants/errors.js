@@ -5,5 +5,6 @@ export const ERRORS = {
     NOT_FOUND_ERROR: 'Not Found Error.',
     NO_STOCK_ERROR: 'No Stock Error',
     GENERAL_ERROR: 'General Error',
-    WRONG_AUTHENTICATION_ERROR: 'No Authorization Error'
+    WRONG_AUTHENTICATION_ERROR: 'No Authorization Error',
+    NO_AUTHORIZATION_ERROR: 'No Authorization Error'
 };

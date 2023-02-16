@@ -1,5 +1,3 @@
-console.log(`Testing to check`);
-
 let deleteProductBtn = document.querySelectorAll('#delete_btn');
 
 // DELETE para eliminar del carrito
@@ -13,9 +11,9 @@ const deleteProduct = async(cid, pid)=> {
 
     const result = await response.json()
     
-    if(result.Status === 'Success') {
+    if(result.status === 'success') {
         Swal.fire({
-            icon: 'success',
+            icon: 'warning',
             title: 'Product deleted successfully',
             toast: true,
             position: 'top-right',

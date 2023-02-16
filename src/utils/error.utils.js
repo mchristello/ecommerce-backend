@@ -43,3 +43,10 @@ export class NoAuthenticationError extends Error {
         this.name = ERRORS.NOT_AUTHENTICATION_ERROR;
     }
 }
+
+export class NoAuthorizationError extends Error {
+    constructor (message) {
+        super(message);
+        this.name = ERRORS.NO_AUTHORIZATION_ERROR;
+    }
+}

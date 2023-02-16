@@ -53,8 +53,6 @@ export class UserManager {
 
             if(findCart) {
                 const updateCart = await UserModel.updateOne({ "carts.cart": cartId }, cartId );
-                const newUser = await UserModel.findOne({ email: userEmail })
-                console.log(`Revisando el update del user: `, JSON.stringify(newUser, null, 2, `\t`));
 
                 return updateCart;
             }
